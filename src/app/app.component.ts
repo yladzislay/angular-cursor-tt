@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { DataTableComponent } from './components/data-table/data-table.component';
+import { DxDataTableComponent } from './components/dx-data-table/dx-data-table.component';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -8,12 +8,12 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [
     RouterOutlet,
-    DataTableComponent,
+    DxDataTableComponent,
     MatIconModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'data-table-app';
+  title = 'dx-data-table';
 }

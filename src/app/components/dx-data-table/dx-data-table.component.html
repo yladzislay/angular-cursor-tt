@@ -1,1 +1,81 @@
-<p>dx-data-table works!</p>
+<div class="dx-data-table-container">
+    <h2>Функциональная таблица данных (DevExtreme)</h2>
+    
+    <!-- Индикатор загрузки -->
+    <div *ngIf="isLoading" class="loading-container">
+      <dx-load-indicator [height]="60" [width]="60"></dx-load-indicator>
+      <span class="loading-text">Загрузка данных...</span>
+    </div>
+    
+    <!-- Сообщение об ошибке -->
+    <div *ngIf="errorMessage" class="error-container">
+      <div class="error-message">{{errorMessage}}</div>
+      <dx-button
+        text="Попробовать снова"
+        (onClick)="reloadData()"
+        type="default">
+      </dx-button>
+    </div>
+    
+    <!-- DevExtreme DataGrid -->
+    <dx-data-grid
+      *ngIf="!isLoading && !errorMessage"
+      [dataSource]="userData"
+      [columns]="columns"
+      [showBorders]="dataGridOptions.showBorders"
+      [rowAlternationEnabled]="dataGridOptions.rowAlternationEnabled"
+      [allowColumnReordering]="dataGridOptions.allowColumnReordering"
+      [allowColumnResizing]="dataGridOptions.allowColumnResizing"
+      [columnAutoWidth]="dataGridOptions.columnAutoWidth"
+      [showColumnLines]="dataGridOptions.showColumnLines"
+      [showRowLines]="dataGridOptions.showRowLines"
+      [hoverStateEnabled]="dataGridOptions.hoverStateEnabled">
+      
+      <!-- Поисковая панель -->
+      <dxo-search-panel
+        [visible]="dataGridOptions.searchPanel.visible"
+        [width]="dataGridOptions.searchPanel.width"
+        [placeholder]="dataGridOptions.searchPanel.placeholder">
+      </dxo-search-panel>
+      
+      <!-- Настройки пагинации -->
+      <dxo-paging
+        [pageSize]="dataGridOptions.paging.pageSize">
+      </dxo-paging>
+      
+      <dxo-pager
+        [showPageSizeSelector]="dataGridOptions.pager.showPageSizeSelector"
+        [allowedPageSizes]="dataGridOptions.pager.allowedPageSizes"
+        [showInfo]="dataGridOptions.pager.showInfo">
+      </dxo-pager>
+      
+      <!-- Настройки сортировки -->
+      <dxo-sorting
+        [mode]="dataGridOptions.sorting.mode">
+      </dxo-sorting>
+      
+      <!-- Строка фильтров -->
+      <dxo-filter-row
+        [visible]="dataGridOptions.filterRow.visible"
+        [applyFilter]="dataGridOptions.filterRow.applyFilter">
+      </dxo-filter-row>
+      
+      <!-- Выбор колонок -->
+      <dxo-column-chooser
+        [enabled]="dataGridOptions.columnChooser.enabled"
+        [mode]="dataGridOptions.columnChooser.mode">
+      </dxo-column-chooser>
+      
+      <!-- Фильтр в заголовке -->
+      <dxo-header-filter
+        [visible]="dataGridOptions.headerFilter.visible">
+      </dxo-header-filter>
+      
+      <!-- Шаблоны для ячеек -->
+      <div *dxTemplate="let data of 'statusTemplate'">
+        <span [class.active-status]="data.value" [class.inactive-status]="!data.value">
+          {{ formatStatus(data.value) }}
+        </span>
+      </div>
+    </dx-data-grid>
+  </div>
