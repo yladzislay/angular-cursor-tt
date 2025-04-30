@@ -87,16 +87,18 @@
         </div>
       </div>
       
-      <!-- Информация о мобильном режиме -->
-      <div *ngIf="isMobile" class="mobile-info">
-        <mat-chip color="warn" selected>Мобильный вид (скрыты некоторые колонки)</mat-chip>
-      </div>
-      
       <!-- Информация о количестве записей -->
       <div *ngIf="!isLoading && !errorMessage" class="data-info">
         <mat-chip-set>
-          <mat-chip color="primary" selected>{{totalRows}} записей</mat-chip>
-          <mat-chip *ngIf="dataSource.filter" color="accent" selected>Применен фильтр</mat-chip>
+          <mat-chip color="primary">{{totalRows}} записей</mat-chip>
+          <mat-chip *ngIf="dataSource.filter" color="accent">Применен фильтр</mat-chip>
+        </mat-chip-set>
+      </div>
+      
+      <!-- Информация о мобильном режиме -->
+      <div *ngIf="isMobile" class="mobile-info">
+        <mat-chip-set>
+          <mat-chip color="warn">Мобильный вид (скрыты некоторые колонки)</mat-chip>
         </mat-chip-set>
       </div>
       
@@ -126,9 +128,11 @@
               </div>
             </th>
             <td mat-cell *matCellDef="let row"> 
-              <mat-chip [color]="row.isActive ? 'primary' : undefined" [selected]="row.isActive" class="status-chip">
-                {{row.isActive ? 'Активен' : 'Неактивен'}}
-              </mat-chip>
+              <mat-chip-set>
+                <mat-chip [color]="row.isActive ? 'primary' : undefined" class="status-chip">
+                  {{row.isActive ? 'Активен' : 'Неактивен'}}
+                </mat-chip>
+              </mat-chip-set>
             </td>
           </ng-container>
           
@@ -283,4 +287,4 @@
       </div>
     </mat-card-content>
   </mat-card>
-</div> 
+</div>
