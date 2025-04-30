@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -15,10 +15,31 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
+import { Subscription } from 'rxjs';
 
 import { DataService } from '../../services/data.service';
 import { UserData } from '../../models/user-data.interface';
 
+/**
+ * Интерфейс для описания колонки таблицы
+ */
+interface TableColumn {
+  id: string;
+  name: string;
+  visible: boolean;
+}
+
+/**
+ * Интерфейс для настройки фильтра
+ */
+interface FilterOptions {
+  column: string;
+  value: string;
+}
+
+/**
+ * Компонент для отображения и управления функциональной таблицей данных
+ */
 @Component({
   selector: 'app-data-table',
   standalone: true,
@@ -44,9 +65,11 @@ import { UserData } from '../../models/user-data.interface';
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.scss'
 })
-export class DataTableComponent implements OnInit, AfterViewInit {
-  // Все доступные колонки
-  allColumns: {id: string, name: string, visible: boolean}[] = [
+export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
+  /**
+   * Все доступные колонки таблицы
+   */
+  allColumns: TableColumn[] = [
     { id: 'isActive', name: 'Статус', visible: true },
     { id: 'name', name: 'Имя', visible: true },
     { id: 'age', name: 'Возраст', visible: true },
@@ -58,35 +81,54 @@ export class DataTableComponent implements OnInit, AfterViewInit {
     { id: 'tags', name: 'Теги', visible: true }
   ];
   
-  // Столбцы, которые будут отображаться в таблице (обновляется из allColumns)
-  displayedColumns: string[] = this.allColumns
-    .filter(column => column.visible)
-    .map(column => column.id);
+  /**
+   * Колонки, отображаемые в данный момент
+   */
+  displayedColumns: string[] = this.getVisibleColumns();
   
-  // Источник данных для MatTable
+  /**
+   * Источник данных для таблицы
+   */
   dataSource = new MatTableDataSource<UserData>([]);
   
-  // Флаг загрузки данных
+  /**
+   * Флаг загрузки данных
+   */
   isLoading = true;
 
-  // Поле, по которому фильтруем (по умолчанию - все поля)
+  /**
+   * Поле, по которому фильтруем (по умолчанию - все поля)
+   */
   filterColumn: string = 'all';
   
-  // Значение фильтра
+  /**
+   * Значение фильтра
+   */
   filterValue: string = '';
 
-  // Настройки пагинации
+  /**
+   * Настройки пагинации
+   */
   pageSizeOptions: number[] = [5, 10, 25, 50, 100];
   pageSize: number = 10;
   pageIndex: number = 0;
   totalRows: number = 0;
   showFirstLastButtons: boolean = true;
 
-  // Ссылки на пагинатор и сортировщик
+  /**
+   * Подписки на асинхронные операции
+   */
+  private subscriptions = new Subscription();
+
+  /**
+   * Ссылки на пагинатор и сортировщик
+   */
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  // Список полей для фильтрации
+  /**
+   * Список полей для фильтрации
+   */
   filterColumns = [
     { value: 'all', viewValue: 'Все поля' },
     { value: 'name', viewValue: 'Имя' },
@@ -100,6 +142,9 @@ export class DataTableComponent implements OnInit, AfterViewInit {
 
   constructor(private dataService: DataService) {}
 
+  /**
+   * Инициализация компонента
+   */
   ngOnInit(): void {
     this.loadData();
     this.configureCustomSorting();
@@ -114,12 +159,19 @@ export class DataTableComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * Очистка ресурсов при уничтожении компонента
+   */
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  /**
    * Загружает данные из сервиса и настраивает dataSource
    */
   loadData(): void {
     this.isLoading = true;
     
-    this.dataService.getData().subscribe({
+    const dataSubscription = this.dataService.getData().subscribe({
       next: (data) => {
         this.dataSource.data = data;
         this.totalRows = data.length;
@@ -135,15 +187,24 @@ export class DataTableComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
       }
     });
+    
+    this.subscriptions.add(dataSubscription);
+  }
+
+  /**
+   * Возвращает массив идентификаторов видимых колонок
+   */
+  private getVisibleColumns(): string[] {
+    return this.allColumns
+      .filter(column => column.visible)
+      .map(column => column.id);
   }
 
   /**
    * Обновляет массив отображаемых колонок на основе выбора пользователя
    */
   updateDisplayedColumns(): void {
-    this.displayedColumns = this.allColumns
-      .filter(column => column.visible)
-      .map(column => column.id);
+    this.displayedColumns = this.getVisibleColumns();
   }
 
   /**
@@ -151,6 +212,14 @@ export class DataTableComponent implements OnInit, AfterViewInit {
    * @param show Показать все колонки (true) или скрыть все (false)
    */
   toggleAllColumns(show: boolean): void {
+    // Если пытаемся скрыть все колонки, оставляем хотя бы одну видимой
+    if (!show) {
+      const visibleColumnsCount = this.allColumns.filter(col => col.visible).length;
+      if (visibleColumnsCount <= 1) {
+        return;
+      }
+    }
+    
     this.allColumns.forEach(column => column.visible = show);
     this.updateDisplayedColumns();
   }
@@ -161,6 +230,14 @@ export class DataTableComponent implements OnInit, AfterViewInit {
    * @param event Событие изменения
    */
   toggleColumn(columnId: string, event: any): void {
+    // Проверяем, не пытается ли пользователь скрыть последнюю видимую колонку
+    if (!event.checked) {
+      const visibleColumnsCount = this.allColumns.filter(col => col.visible).length;
+      if (visibleColumnsCount <= 1) {
+        return;
+      }
+    }
+    
     // Найти колонку в массиве и обновить её видимость
     const column = this.allColumns.find(col => col.id === columnId);
     if (column) {
@@ -210,6 +287,10 @@ export class DataTableComponent implements OnInit, AfterViewInit {
    * Возвращает текущий диапазон отображаемых записей (например, "1-10 из 100")
    */
   getCurrentRange(): string {
+    if (this.totalRows === 0) {
+      return '0-0 из 0';
+    }
+    
     const start = this.pageIndex * this.pageSize + 1;
     const end = Math.min((this.pageIndex + 1) * this.pageSize, this.totalRows);
     return `${start}-${end} из ${this.totalRows}`;
@@ -247,10 +328,12 @@ export class DataTableComponent implements OnInit, AfterViewInit {
     }
     
     // Установка значения фильтра с сохранением текущего выбранного поля
-    this.dataSource.filter = JSON.stringify({
+    const filterOptions: FilterOptions = {
       column: this.filterColumn,
       value: this.filterValue.trim().toLowerCase()
-    });
+    };
+    
+    this.dataSource.filter = JSON.stringify(filterOptions);
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
@@ -286,21 +369,16 @@ export class DataTableComponent implements OnInit, AfterViewInit {
     this.dataSource.filterPredicate = (data: UserData, filterStr: string) => {
       try {
         // Разбираем строку фильтра, которую мы установили в JSON формате
-        const filterObj = JSON.parse(filterStr);
-        const column = filterObj.column;
-        const value = filterObj.value.toLowerCase();
+        const filterOptions: FilterOptions = JSON.parse(filterStr);
+        const column = filterOptions.column;
+        const value = filterOptions.value.toLowerCase();
         
         if (!value) return true; // Пустой фильтр = показать все
         
         // Фильтрация по выбранному полю
         switch (column) {
           case 'all':
-            return `${data.name.first} ${data.name.last}`.toLowerCase().includes(value) ||
-              data.company.toLowerCase().includes(value) ||
-              data.email.toLowerCase().includes(value) ||
-              data.address.toLowerCase().includes(value) ||
-              data.favoriteFruit.toLowerCase().includes(value) ||
-              data.tags.some(tag => tag.toLowerCase().includes(value));
+            return this.matchesAllFields(data, value);
           
           case 'name':
             return `${data.name.first} ${data.name.last}`.toLowerCase().includes(value);
@@ -323,5 +401,20 @@ export class DataTableComponent implements OnInit, AfterViewInit {
         return true;
       }
     };
+  }
+  
+  /**
+   * Проверяет совпадение значения фильтра с любым из полей записи
+   * @param data Проверяемая запись
+   * @param value Значение фильтра
+   * @returns true, если значение найдено в любом из полей
+   */
+  private matchesAllFields(data: UserData, value: string): boolean {
+    return `${data.name.first} ${data.name.last}`.toLowerCase().includes(value) ||
+      data.company.toLowerCase().includes(value) ||
+      data.email.toLowerCase().includes(value) ||
+      data.address.toLowerCase().includes(value) ||
+      data.favoriteFruit.toLowerCase().includes(value) ||
+      data.tags.some(tag => tag.toLowerCase().includes(value));
   }
 } 
