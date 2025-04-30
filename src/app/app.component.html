@@ -1,1 +1,21 @@
-<app-dx-data-table></app-dx-data-table>
+<div class="app-container">
+  <mat-toolbar color="primary" class="app-toolbar">
+    <span>Приложение для отображения таблицы данных</span>
+    <span class="toolbar-spacer"></span>
+    <div class="table-switcher">
+      <mat-button-toggle-group [value]="currentTable" aria-label="Выбор таблицы">
+        <mat-button-toggle value="material" (click)="switchTable('material')">
+          <mat-icon>table_chart</mat-icon> Angular Material
+        </mat-button-toggle>
+        <mat-button-toggle value="devextreme" (click)="switchTable('devextreme')">
+          <mat-icon>grid_on</mat-icon> DevExtreme
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </mat-toolbar>
+  
+  <div class="content-container">
+    <app-data-table *ngIf="currentTable === 'material'"></app-data-table>
+    <app-dx-data-table *ngIf="currentTable === 'devextreme'"></app-dx-data-table>
+  </div>
+</div>

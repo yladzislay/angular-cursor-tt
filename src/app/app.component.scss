@@ -1,0 +1,53 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.table-switcher {
+  margin-right: 16px;
+}
+
+.content-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+mat-button-toggle-group {
+  margin-left: 16px;
+}
+
+mat-button-toggle {
+  display: flex;
+  align-items: center;
+  
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-switcher {
+    margin-right: 0;
+  }
+  
+  mat-button-toggle-group {
+    margin-left: 8px;
+  }
+  
+  mat-button-toggle mat-icon {
+    margin-right: 4px;
+  }
+}

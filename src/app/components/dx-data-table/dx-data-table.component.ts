@@ -36,10 +36,24 @@ export class DxDataTableComponent implements OnInit, OnDestroy {
   
   // Настройки колонок
   columns: DxColumn[] = [
-    { dataField: 'isActive', caption: 'Статус', dataType: 'boolean', width: 100 },
+    { 
+      dataField: 'isActive', 
+      caption: 'Статус', 
+      dataType: 'boolean', 
+      width: 100,
+      lookup: {
+        dataSource: [
+          { value: true, text: 'Активен' },
+          { value: false, text: 'Неактивен' }
+        ],
+        valueExpr: 'value',
+        displayExpr: 'text'
+      }
+    },
     { 
       dataField: 'name', 
-      caption: 'Имя', 
+      caption: 'Имя',
+      width: 160,
       calculateCellValue: (data: UserData) => {
         if (data && data.name) {
           const firstName = data.name.first || '';
@@ -50,14 +64,15 @@ export class DxDataTableComponent implements OnInit, OnDestroy {
       }
     },
     { dataField: 'age', caption: 'Возраст', dataType: 'number', width: 100 },
-    { dataField: 'company', caption: 'Компания' },
-    { dataField: 'email', caption: 'Email' },
-    { dataField: 'balance', caption: 'Баланс' },
-    { dataField: 'address', caption: 'Адрес' },
-    { dataField: 'favoriteFruit', caption: 'Любимый фрукт' },
+    { dataField: 'company', caption: 'Компания', width: 150 },
+    { dataField: 'email', caption: 'Email', width: 200 },
+    { dataField: 'balance', caption: 'Баланс', width: 120 },
+    { dataField: 'address', caption: 'Адрес', width: 300 },
+    { dataField: 'favoriteFruit', caption: 'Любимый фрукт', width: 150 },
     { 
       dataField: 'tags', 
-      caption: 'Теги', 
+      caption: 'Теги',
+      width: 200,
       calculateCellValue: (data: UserData) => {
         if (data && data.tags && Array.isArray(data.tags)) {
           return data.tags.join(', ');
@@ -79,7 +94,7 @@ export class DxDataTableComponent implements OnInit, OnDestroy {
     rowAlternationEnabled: true,
     allowColumnReordering: true,
     allowColumnResizing: true,
-    columnAutoWidth: true,
+    columnAutoWidth: false,
     showColumnLines: true,
     showRowLines: true,
     hoverStateEnabled: true,
@@ -121,7 +136,24 @@ export class DxDataTableComponent implements OnInit, OnDestroy {
     // Настройки заголовка
     headerFilter: {
       visible: true
-    }
+    },
+    
+    // Добавим скроллбар по горизонтали
+    columnFixing: {
+      enabled: true
+    },
+    
+    // Фиксированная высота для лучшего UX
+    height: 'calc(100vh - 150px)',
+    
+    // Добавим экспорт данных
+    export: {
+      enabled: true,
+      allowExportSelectedData: true
+    },
+    
+    // Адаптация к ширине экрана
+    adaptColumnWidthByRatio: true,
   };
   
   private subscriptions = new Subscription();
