@@ -15,6 +15,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatCardModule } from '@angular/material/card';
 import { Subscription } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { throwError } from 'rxjs';
@@ -62,7 +63,8 @@ interface FilterOptions {
     MatChipsModule,
     MatMenuModule,
     MatCheckboxModule,
-    MatDividerModule
+    MatDividerModule,
+    MatCardModule
   ],
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.scss'
@@ -146,6 +148,8 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
     { value: 'tags', viewValue: 'Теги' },
     { value: 'isActive', viewValue: 'Статус' },
   ];
+
+  Math = Math; // Делаем Math доступным в шаблоне
 
   constructor(private dataService: DataService) {}
 

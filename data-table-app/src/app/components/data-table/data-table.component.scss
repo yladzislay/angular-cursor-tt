@@ -4,6 +4,14 @@
   margin: 0 auto;
 }
 
+.dashboard-card {
+  margin-bottom: 24px;
+  
+  mat-card-header {
+    margin-bottom: 16px;
+  }
+}
+
 // Панель управления таблицей
 .control-panel {
   display: flex;
@@ -11,11 +19,6 @@
   gap: 16px;
   margin-bottom: 16px;
   align-items: flex-start;
-  
-  .column-visibility-control {
-    display: flex;
-    gap: 8px;
-  }
 }
 
 // Контейнер для полей фильтрации
@@ -32,6 +35,11 @@
   .filter-value {
     flex-grow: 1;
   }
+}
+
+// Информация о данных
+.data-info {
+  margin-bottom: 16px;
 }
 
 // Стили для меню колонок
@@ -72,6 +80,7 @@
   justify-content: flex-end;
 }
 
+// Обновленные стили для индикатора загрузки
 .spinner-container {
   display: flex;
   flex-direction: column;
@@ -83,104 +92,6 @@
     margin-top: 16px;
     font-size: 16px;
     color: rgba(0, 0, 0, 0.6);
-  }
-}
-
-.table-container {
-  overflow-x: auto; // Горизонтальная прокрутка для маленьких экранов
-}
-
-.data-table {
-  width: 100%;
-}
-
-// Стили для заголовков колонок и иконок сортировки
-.header-cell {
-  display: flex;
-  align-items: center;
-  
-  .sort-icon {
-    opacity: 0.5;
-    font-size: 16px;
-    margin-left: 4px;
-  }
-  
-  &:hover {
-    .sort-icon {
-      opacity: 1;
-    }
-  }
-}
-
-// Стиль для метки статуса
-.status-badge {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  background-color: #f1f1f1;
-  
-  &.active {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-  }
-}
-
-.tag {
-  display: inline-block;
-  background-color: #f1f1f1;
-  padding: 4px 8px;
-  border-radius: 4px;
-  margin-right: 4px;
-  margin-bottom: 4px;
-  font-size: 0.85rem;
-}
-
-// Стили для информации о пагинации
-.pagination-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 8px 0;
-  
-  .pagination-actions {
-    display: flex;
-    gap: 8px;
-  }
-}
-
-// Адаптивность для маленьких экранов
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
-  
-  // На маленьких экранах меняем направление элементов управления
-  .control-panel {
-    flex-direction: column;
-    
-    .column-visibility-control {
-      margin-bottom: 8px;
-      
-      button {
-        width: 100%;
-      }
-    }
-  }
-  
-  // На маленьких экранах меняем направление фильтров на вертикальное
-  .filter-container {
-    flex-direction: column;
-    gap: 0;
-    width: 100%;
-    
-    .filter-column, .filter-value {
-      width: 100%;
-    }
-  }
-  
-  // На маленьких экранах уменьшаем отступы в ячейках
-  td.mat-cell, th.mat-header-cell {
-    padding: 8px;
   }
 }
 
@@ -207,5 +118,195 @@
   
   button {
     min-width: 150px;
+  }
+}
+
+// Стили для таблицы
+.table-container {
+  overflow-x: auto; // Горизонтальная прокрутка для маленьких экранов
+}
+
+.data-table {
+  width: 100%;
+  
+  // Стили для заголовков ячеек
+  th.mat-header-cell {
+    color: rgba(0, 0, 0, 0.7);
+    font-weight: 500;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  
+  // Стили для ячеек
+  td.mat-cell {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  
+  // Стили для строк
+  tr.mat-row:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+  
+  // Стили для поля с отсутствием данных
+  .no-data-cell {
+    padding: 48px 0 !important;
+    
+    .no-data-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: rgba(0, 0, 0, 0.5);
+      
+      mat-icon {
+        font-size: 32px;
+        height: 32px;
+        width: 32px;
+        margin-bottom: 8px;
+      }
+    }
+  }
+}
+
+// Стили для ячеек с информацией о пользователе
+.user-name {
+  display: flex;
+  align-items: center;
+  
+  .user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+}
+
+// Стили для ссылок на email
+.email-link {
+  color: #1976d2;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Стили для баланса
+.positive-balance {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+// Стили для адреса
+.address-cell {
+  max-width: 250px;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+// Стили для фруктов
+.fruit-label {
+  text-transform: capitalize;
+}
+
+// Стили для заголовков колонок и иконок сортировки
+.header-cell {
+  display: flex;
+  align-items: center;
+  
+  .sort-icon {
+    opacity: 0.5;
+    font-size: 16px;
+    margin-left: 4px;
+  }
+  
+  &:hover {
+    .sort-icon {
+      opacity: 1;
+    }
+  }
+}
+
+// Стили для чипа статуса
+.status-chip {
+  min-height: 24px;
+  font-size: 12px;
+}
+
+// Стили для тегов
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag {
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+// Стили для информации о пагинации
+.pagination-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+  
+  .pagination-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .range-info {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+// Кнопки действий в панели управления
+.table-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+// Адаптивность для маленьких экранов
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+  
+  // На маленьких экранах меняем направление элементов управления
+  .control-panel {
+    flex-direction: column;
+    
+    .table-actions {
+      width: 100%;
+      
+      button {
+        flex-grow: 1;
+      }
+    }
+  }
+  
+  // На маленьких экранах меняем направление фильтров на вертикальное
+  .filter-container {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    
+    .filter-column, .filter-value {
+      width: 100%;
+    }
+  }
+  
+  // На маленьких экранах скрываем некоторые ячейки для улучшения отображения
+  .pagination-info {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
   }
 } 
