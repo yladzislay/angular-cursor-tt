@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 
 import { DataService } from '../../services/data.service';
 import { UserData } from '../../models/user-data.interface';
@@ -31,7 +32,8 @@ import { UserData } from '../../models/user-data.interface';
     MatIconModule,
     MatSelectModule,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatChipsModule
   ],
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.scss'
@@ -61,6 +63,13 @@ export class DataTableComponent implements OnInit, AfterViewInit {
   
   // Значение фильтра
   filterValue: string = '';
+
+  // Настройки пагинации
+  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+  pageSize: number = 10;
+  pageIndex: number = 0;
+  totalRows: number = 0;
+  showFirstLastButtons: boolean = true;
 
   // Ссылки на пагинатор и сортировщик
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -102,6 +111,7 @@ export class DataTableComponent implements OnInit, AfterViewInit {
     this.dataService.getData().subscribe({
       next: (data) => {
         this.dataSource.data = data;
+        this.totalRows = data.length;
         
         // После получения данных подключаем пагинатор и сортировщик
         this.dataSource.paginator = this.paginator;
@@ -114,6 +124,40 @@ export class DataTableComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
       }
     });
+  }
+
+  /**
+   * Обработчик события изменения страницы
+   * @param event Событие пагинации
+   */
+  handlePageEvent(event: PageEvent): void {
+    this.pageSize = event.pageSize;
+    this.pageIndex = event.pageIndex;
+  }
+
+  /**
+   * Переход на первую страницу
+   */
+  goToFirstPage(): void {
+    this.paginator.firstPage();
+  }
+
+  /**
+   * Переход на последнюю страницу
+   */
+  goToLastPage(): void {
+    const lastPageIndex = Math.ceil(this.totalRows / this.pageSize) - 1;
+    this.paginator.pageIndex = lastPageIndex;
+    this.paginator._changePageSize(this.pageSize);
+  }
+
+  /**
+   * Возвращает текущий диапазон отображаемых записей (например, "1-10 из 100")
+   */
+  getCurrentRange(): string {
+    const start = this.pageIndex * this.pageSize + 1;
+    const end = Math.min((this.pageIndex + 1) * this.pageSize, this.totalRows);
+    return `${start}-${end} из ${this.totalRows}`;
   }
 
   /**

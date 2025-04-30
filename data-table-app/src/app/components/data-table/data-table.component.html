@@ -148,7 +148,35 @@
       </tr>
     </table>
     
+    <!-- Расширенная информация о пагинации -->
+    <div class="pagination-info">
+      <mat-chip-set>
+        <mat-chip>{{getCurrentRange()}}</mat-chip>
+      </mat-chip-set>
+      
+      <div class="pagination-actions">
+        <button mat-icon-button (click)="goToFirstPage()" 
+                [disabled]="pageIndex === 0"
+                matTooltip="Первая страница">
+          <mat-icon>first_page</mat-icon>
+        </button>
+        
+        <button mat-icon-button (click)="goToLastPage()" 
+                [disabled]="pageIndex === (totalRows / pageSize) - 1"
+                matTooltip="Последняя страница">
+          <mat-icon>last_page</mat-icon>
+        </button>
+      </div>
+    </div>
+    
     <!-- Пагинатор -->
-    <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" aria-label="Выберите страницу"></mat-paginator>
+    <mat-paginator 
+      [pageSizeOptions]="pageSizeOptions"
+      [pageSize]="pageSize"
+      [showFirstLastButtons]="showFirstLastButtons"
+      [length]="totalRows"
+      (page)="handlePageEvent($event)"
+      aria-label="Выберите страницу">
+    </mat-paginator>
   </div>
 </div> 

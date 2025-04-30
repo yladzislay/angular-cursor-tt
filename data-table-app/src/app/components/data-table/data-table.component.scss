@@ -95,4 +95,17 @@
   td.mat-cell, th.mat-header-cell {
     padding: 8px;
   }
+}
+
+// Стили для информации о пагинации
+.pagination-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+  
+  .pagination-actions {
+    display: flex;
+    gap: 8px;
+  }
 } 
