@@ -1,0 +1,88 @@
+<div class="container">
+  <h1>Функциональная таблица данных</h1>
+  
+  <!-- Поле для фильтрации -->
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Фильтр</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Например: Apple">
+  </mat-form-field>
+  
+  <!-- Индикатор загрузки -->
+  <div *ngIf="isLoading" class="spinner-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+  
+  <!-- Таблица данных -->
+  <div class="table-container" [hidden]="isLoading">
+    <table mat-table [dataSource]="dataSource" matSort class="data-table">
+      
+      <!-- Колонка статуса (Active) -->
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Статус </th>
+        <td mat-cell *matCellDef="let row"> {{row.isActive ? 'Активен' : 'Неактивен'}} </td>
+      </ng-container>
+      
+      <!-- Колонка имени (объединяет first и last name) -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Имя </th>
+        <td mat-cell *matCellDef="let row"> {{row.name.first}} {{row.name.last}} </td>
+      </ng-container>
+      
+      <!-- Колонка возраста -->
+      <ng-container matColumnDef="age">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Возраст </th>
+        <td mat-cell *matCellDef="let row"> {{row.age}} </td>
+      </ng-container>
+      
+      <!-- Колонка компании -->
+      <ng-container matColumnDef="company">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Компания </th>
+        <td mat-cell *matCellDef="let row"> {{row.company}} </td>
+      </ng-container>
+      
+      <!-- Колонка email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+        <td mat-cell *matCellDef="let row"> {{row.email}} </td>
+      </ng-container>
+      
+      <!-- Колонка баланса -->
+      <ng-container matColumnDef="balance">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Баланс </th>
+        <td mat-cell *matCellDef="let row"> {{row.balance}} </td>
+      </ng-container>
+      
+      <!-- Колонка адреса -->
+      <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Адрес </th>
+        <td mat-cell *matCellDef="let row"> {{row.address}} </td>
+      </ng-container>
+      
+      <!-- Колонка любимого фрукта -->
+      <ng-container matColumnDef="favoriteFruit">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Любимый фрукт </th>
+        <td mat-cell *matCellDef="let row"> {{row.favoriteFruit}} </td>
+      </ng-container>
+      
+      <!-- Колонка тегов (массив) -->
+      <ng-container matColumnDef="tags">
+        <th mat-header-cell *matHeaderCellDef> Теги </th>
+        <td mat-cell *matCellDef="let row"> 
+          <span class="tag" *ngFor="let tag of row.tags">{{tag}}</span>
+        </td>
+      </ng-container>
+      
+      <!-- Заголовок и строки таблицы -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      
+      <!-- Строка "Нет данных" -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="9">Нет данных, соответствующих фильтру</td>
+      </tr>
+    </table>
+    
+    <!-- Пагинатор -->
+    <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" aria-label="Выберите страницу"></mat-paginator>
+  </div>
+</div> 

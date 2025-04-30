@@ -1,0 +1,41 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.filter-field {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.table-container {
+  overflow-x: auto; // Горизонтальная прокрутка для маленьких экранов
+}
+
+.data-table {
+  width: 100%;
+}
+
+.tag {
+  display: inline-block;
+  background-color: #f1f1f1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  font-size: 0.85rem;
+}
+
+// Адаптивность для маленьких экранов
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+} 
