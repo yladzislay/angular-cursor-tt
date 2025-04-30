@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -7,6 +8,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { DataService } from '../../services/data.service';
 import { UserData } from '../../models/user-data.interface';
@@ -16,13 +20,18 @@ import { UserData } from '../../models/user-data.interface';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    MatIconModule
+    MatIconModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatTooltipModule
   ],
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.scss'
@@ -31,14 +40,14 @@ export class DataTableComponent implements OnInit, AfterViewInit {
   // Столбцы, которые будут отображаться в таблице
   displayedColumns: string[] = [
     'isActive', 
-    'name',       // комбинированное поле name.first + name.last
+    'name',
     'age',
     'company',
     'email',
     'balance',
     'address',
     'favoriteFruit',
-    'tags'        // массив тегов
+    'tags'
   ];
   
   // Источник данных для MatTable
@@ -47,17 +56,34 @@ export class DataTableComponent implements OnInit, AfterViewInit {
   // Флаг загрузки данных
   isLoading = true;
 
+  // Поле, по которому фильтруем (по умолчанию - все поля)
+  filterColumn: string = 'all';
+  
+  // Значение фильтра
+  filterValue: string = '';
+
   // Ссылки на пагинатор и сортировщик
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+
+  // Список полей для фильтрации
+  filterColumns = [
+    { value: 'all', viewValue: 'Все поля' },
+    { value: 'name', viewValue: 'Имя' },
+    { value: 'company', viewValue: 'Компания' },
+    { value: 'email', viewValue: 'Email' },
+    { value: 'address', viewValue: 'Адрес' },
+    { value: 'favoriteFruit', viewValue: 'Любимый фрукт' },
+    { value: 'tags', viewValue: 'Теги' },
+    { value: 'isActive', viewValue: 'Статус' },
+  ];
 
   constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
     this.loadData();
-    
-    // Настройка кастомной логики сортировки
     this.configureCustomSorting();
+    this.configureCustomFiltering();
   }
 
   /**
@@ -114,12 +140,40 @@ export class DataTableComponent implements OnInit, AfterViewInit {
 
   /**
    * Метод для фильтрации данных
-   * @param event Событие ввода
+   * @param event Событие ввода или null, если вызывается программно
    */
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  applyFilter(event: Event | null = null): void {
+    if (event) {
+      this.filterValue = (event.target as HTMLInputElement).value;
+    }
+    
+    // Установка значения фильтра с сохранением текущего выбранного поля
+    this.dataSource.filter = JSON.stringify({
+      column: this.filterColumn,
+      value: this.filterValue.trim().toLowerCase()
+    });
 
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  /**
+   * Метод вызывается при изменении поля для фильтрации
+   */
+  onFilterColumnChange(): void {
+    // Переприменяем текущий фильтр с новым выбранным полем
+    this.applyFilter();
+  }
+
+  /**
+   * Очистка фильтра
+   */
+  clearFilter(): void {
+    this.filterValue = '';
+    this.filterColumn = 'all';
+    this.dataSource.filter = '';
+    
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
@@ -129,17 +183,46 @@ export class DataTableComponent implements OnInit, AfterViewInit {
    * Настройка кастомной логики фильтрации
    */
   configureCustomFiltering(): void {
-    // Настройка кастомной функции фильтрации
-    this.dataSource.filterPredicate = (data: UserData, filter: string) => {
-      const filterValue = filter.trim().toLowerCase();
-      
-      // Проверяем все поля, которые мы хотим включить в фильтрацию
-      return `${data.name.first} ${data.name.last}`.toLowerCase().includes(filterValue) ||
-            data.company.toLowerCase().includes(filterValue) ||
-            data.email.toLowerCase().includes(filterValue) ||
-            data.address.toLowerCase().includes(filterValue) ||
-            data.favoriteFruit.toLowerCase().includes(filterValue) ||
-            data.tags.some(tag => tag.toLowerCase().includes(filterValue));
+    // Настройка кастомной функции фильтрации с поддержкой выбора поля
+    this.dataSource.filterPredicate = (data: UserData, filterStr: string) => {
+      try {
+        // Разбираем строку фильтра, которую мы установили в JSON формате
+        const filterObj = JSON.parse(filterStr);
+        const column = filterObj.column;
+        const value = filterObj.value.toLowerCase();
+        
+        if (!value) return true; // Пустой фильтр = показать все
+        
+        // Фильтрация по выбранному полю
+        switch (column) {
+          case 'all':
+            return `${data.name.first} ${data.name.last}`.toLowerCase().includes(value) ||
+              data.company.toLowerCase().includes(value) ||
+              data.email.toLowerCase().includes(value) ||
+              data.address.toLowerCase().includes(value) ||
+              data.favoriteFruit.toLowerCase().includes(value) ||
+              data.tags.some(tag => tag.toLowerCase().includes(value));
+          
+          case 'name':
+            return `${data.name.first} ${data.name.last}`.toLowerCase().includes(value);
+          
+          case 'isActive':
+            // Для логических полей "активен"/"неактивен" проверяем вхождение текста
+            const statusText = data.isActive ? 'активен' : 'неактивен';
+            return statusText.includes(value);
+          
+          case 'tags':
+            return data.tags.some(tag => tag.toLowerCase().includes(value));
+          
+          default:
+            // Для всех остальных полей используем стандартную проверку
+            return String((data as any)[column]).toLowerCase().includes(value);
+        }
+      } catch (e) {
+        // Если фильтр не в JSON формате (например, пустая строка),
+        // просто возвращаем true (показать все)
+        return true;
+      }
     };
   }
 } 

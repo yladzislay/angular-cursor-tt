@@ -1,12 +1,28 @@
 <div class="container">
   <h1>Функциональная таблица данных</h1>
   
-  <!-- Поле для фильтрации -->
-  <mat-form-field appearance="outline" class="filter-field">
-    <mat-label>Фильтр</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="Например: Apple">
-    <mat-hint>Поиск по всем полям: имя, компания, email, адрес, теги</mat-hint>
-  </mat-form-field>
+  <!-- Расширенная фильтрация -->
+  <div class="filter-container">
+    <mat-form-field appearance="outline" class="filter-column">
+      <mat-label>Поле для поиска</mat-label>
+      <mat-select [(ngModel)]="filterColumn" (selectionChange)="onFilterColumnChange()">
+        <mat-option *ngFor="let column of filterColumns" [value]="column.value">
+          {{column.viewValue}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    
+    <mat-form-field appearance="outline" class="filter-value">
+      <mat-label>Поиск</mat-label>
+      <input matInput [(ngModel)]="filterValue" (keyup)="applyFilter($event)" placeholder="Например: Apple">
+      <button *ngIf="filterValue" matSuffix mat-icon-button aria-label="Очистить" 
+              (click)="clearFilter()" matTooltip="Очистить фильтр">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-hint *ngIf="filterColumn === 'all'">Поиск по всем полям</mat-hint>
+      <mat-hint *ngIf="filterColumn === 'isActive'">Введите 'активен' или 'неактивен'</mat-hint>
+    </mat-form-field>
+  </div>
   
   <!-- Индикатор загрузки -->
   <div *ngIf="isLoading" class="spinner-container">

@@ -4,9 +4,20 @@
   margin: 0 auto;
 }
 
-.filter-field {
-  width: 100%;
+// Контейнер для полей фильтрации
+.filter-container {
+  display: flex;
+  gap: 16px;
   margin-bottom: 15px;
+  
+  .filter-column {
+    width: 200px;
+    flex-shrink: 0;
+  }
+  
+  .filter-value {
+    flex-grow: 1;
+  }
 }
 
 .spinner-container {
@@ -68,6 +79,16 @@
 @media (max-width: 768px) {
   .container {
     padding: 10px;
+  }
+  
+  // На маленьких экранах меняем направление фильтров на вертикальное
+  .filter-container {
+    flex-direction: column;
+    gap: 0;
+    
+    .filter-column, .filter-value {
+      width: 100%;
+    }
   }
   
   // На маленьких экранах уменьшаем отступы в ячейках
