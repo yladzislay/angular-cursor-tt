@@ -69,16 +69,32 @@
           </button>
         </div>
       </mat-menu>
+      
+      <!-- Кнопка перезагрузки данных -->
+      <button mat-stroked-button (click)="reloadData()" 
+              [disabled]="isLoading"
+              matTooltip="Перезагрузить данные">
+        <mat-icon>refresh</mat-icon>
+        Обновить
+      </button>
     </div>
   </div>
   
   <!-- Индикатор загрузки -->
   <div *ngIf="isLoading" class="spinner-container">
-    <mat-spinner diameter="50"></mat-spinner>
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <span class="loading-text">Загрузка данных...</span>
+  </div>
+  
+  <!-- Сообщение об ошибке -->
+  <div *ngIf="errorMessage" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <span class="error-message">{{errorMessage}}</span>
+    <button mat-raised-button color="primary" (click)="reloadData()">Попробовать снова</button>
   </div>
   
   <!-- Таблица данных -->
-  <div class="table-container" [hidden]="isLoading">
+  <div class="table-container" [hidden]="isLoading || errorMessage">
     <table mat-table [dataSource]="dataSource" matSort class="data-table">
       
       <!-- Колонка статуса (Active) -->

@@ -16,6 +16,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
 import { Subscription } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 import { DataService } from '../../services/data.service';
 import { UserData } from '../../models/user-data.interface';
@@ -94,7 +96,12 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Флаг загрузки данных
    */
-  isLoading = true;
+  isLoading = false;
+
+  /**
+   * Сообщение об ошибке, если загрузка данных не удалась
+   */
+  errorMessage: string | null = null;
 
   /**
    * Поле, по которому фильтруем (по умолчанию - все поля)
@@ -170,25 +177,42 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   loadData(): void {
     this.isLoading = true;
+    this.errorMessage = null;
     
-    const dataSubscription = this.dataService.getData().subscribe({
-      next: (data) => {
-        this.dataSource.data = data;
-        this.totalRows = data.length;
-        
-        // После получения данных подключаем пагинатор и сортировщик
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Ошибка при получении данных:', err);
-        this.isLoading = false;
-      }
-    });
+    const dataSubscription = this.dataService.getData()
+      .pipe(
+        catchError(error => {
+          this.errorMessage = 'Произошла ошибка при загрузке данных. Пожалуйста, попробуйте позже.';
+          return throwError(() => error);
+        }),
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.dataSource.data = data;
+          this.totalRows = data.length;
+          
+          // После получения данных подключаем пагинатор и сортировщик
+          setTimeout(() => {
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
+          });
+        },
+        error: (err) => {
+          console.error('Ошибка при получении данных:', err);
+        }
+      });
     
     this.subscriptions.add(dataSubscription);
+  }
+
+  /**
+   * Перезагружает данные
+   */
+  reloadData(): void {
+    this.loadData();
   }
 
   /**

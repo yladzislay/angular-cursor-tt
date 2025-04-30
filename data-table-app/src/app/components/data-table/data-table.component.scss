@@ -11,6 +11,11 @@
   gap: 16px;
   margin-bottom: 16px;
   align-items: flex-start;
+  
+  .column-visibility-control {
+    display: flex;
+    gap: 8px;
+  }
 }
 
 // Контейнер для полей фильтрации
@@ -69,8 +74,16 @@
 
 .spinner-container {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  margin: 30px 0;
+  margin: 40px 0;
+  
+  .loading-text {
+    margin-top: 16px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.6);
+  }
 }
 
 .table-container {
@@ -168,5 +181,31 @@
   // На маленьких экранах уменьшаем отступы в ячейках
   td.mat-cell, th.mat-header-cell {
     padding: 8px;
+  }
+}
+
+// Стили для контейнера с сообщением об ошибке
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 40px 0;
+  text-align: center;
+  
+  .mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 16px;
+  }
+  
+  .error-message {
+    margin-bottom: 24px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.87);
+  }
+  
+  button {
+    min-width: 150px;
   }
 } 
