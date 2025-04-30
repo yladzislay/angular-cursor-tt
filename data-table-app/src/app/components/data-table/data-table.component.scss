@@ -309,4 +309,109 @@
     align-items: center;
     gap: 8px;
   }
+}
+
+// Специальные стили для мобильных устройств
+.mobile-container {
+  padding: 8px;
+  
+  .dashboard-card {
+    mat-card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      mat-card-title {
+        font-size: 18px;
+      }
+      
+      mat-card-subtitle {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.mobile-control-panel {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-filter-container {
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  
+  .filter-column, .filter-value {
+    width: 100%;
+  }
+}
+
+.mobile-table-actions {
+  width: 100%;
+  justify-content: space-between;
+  
+  button {
+    min-width: 0;
+    padding: 0 12px;
+  }
+}
+
+.mobile-info {
+  margin: 8px 0 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.mobile-table-container {
+  .mat-header-cell, .mat-cell {
+    padding: 8px !important;
+  }
+  
+  .address-cell, .tags-container {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// Расширенные стили для адаптивности
+@media (max-width: 768px) {
+  // ... существующие стили для медиа-запроса ...
+  
+  // Дополнительные стили для мобильных устройств
+  .pagination-info {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .data-info {
+    display: flex;
+    justify-content: center;
+  }
+  
+  // Уменьшаем размер шрифта для ячеек на мобильных
+  td.mat-cell, th.mat-header-cell {
+    font-size: 12px !important;
+  }
+  
+  // Скрываем текст кнопок на мобильных, оставляя только иконки
+  .action-button .button-icon {
+    margin-right: 0;
+  }
+}
+
+// Стили для еще более маленьких экранов
+@media (max-width: 480px) {
+  .user-name {
+    .user-avatar {
+      display: none; // Скрываем аватары на очень маленьких экранах
+    }
+  }
+  
+  // Еще сильнее уменьшаем отступы
+  td.mat-cell, th.mat-header-cell {
+    padding: 4px !important;
+  }
 } 

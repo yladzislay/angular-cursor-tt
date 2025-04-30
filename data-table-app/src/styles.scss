@@ -29,3 +29,21 @@ body {
 .mat-chip {
   font-size: 12px;
 }
+
+/* Стили для мобильных выпадающих меню */
+@media (max-width: 768px) {
+  .mat-menu-panel {
+    min-width: 250px !important;
+  }
+  
+  .column-menu-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    
+    .column-menu-actions {
+      margin-top: 8px;
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+}

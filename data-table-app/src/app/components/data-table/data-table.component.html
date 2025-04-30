@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" [class.mobile-container]="isMobile">
   <mat-card class="dashboard-card">
     <mat-card-header>
       <mat-card-title>Функциональная таблица данных</mat-card-title>
@@ -7,9 +7,9 @@
     
     <mat-card-content>
       <!-- Панель управления таблицей -->
-      <div class="control-panel">
+      <div class="control-panel" [class.mobile-control-panel]="isMobile">
         <!-- Расширенная фильтрация -->
-        <div class="filter-container">
+        <div class="filter-container" [class.mobile-filter-container]="isMobile">
           <mat-form-field appearance="outline" class="filter-column">
             <mat-label>Поле для поиска</mat-label>
             <mat-select [(ngModel)]="filterColumn" (selectionChange)="onFilterColumnChange()">
@@ -33,12 +33,12 @@
         </div>
         
         <!-- Кнопки управления -->
-        <div class="table-actions">
+        <div class="table-actions" [class.mobile-table-actions]="isMobile">
           <!-- Кнопка управления колонками -->
           <button mat-flat-button color="primary" [matMenuTriggerFor]="columnMenu" 
                 class="action-button" matTooltip="Управление видимостью колонок">
             <mat-icon class="button-icon">view_column</mat-icon>
-            Колонки
+            <span *ngIf="!isMobile">Колонки</span>
           </button>
           
           <!-- Меню для выбора колонок -->
@@ -82,9 +82,14 @@
                   [disabled]="isLoading"
                   class="action-button" matTooltip="Перезагрузить данные">
             <mat-icon class="button-icon">refresh</mat-icon>
-            Обновить
+            <span *ngIf="!isMobile">Обновить</span>
           </button>
         </div>
+      </div>
+      
+      <!-- Информация о мобильном режиме -->
+      <div *ngIf="isMobile" class="mobile-info">
+        <mat-chip color="warn" selected>Мобильный вид (скрыты некоторые колонки)</mat-chip>
       </div>
       
       <!-- Информация о количестве записей -->
@@ -109,7 +114,7 @@
       </div>
       
       <!-- Таблица данных -->
-      <div class="table-container" [hidden]="isLoading || errorMessage">
+      <div class="table-container" [class.mobile-table-container]="isMobile" [hidden]="isLoading || errorMessage">
         <table mat-table [dataSource]="dataSource" matSort class="data-table mat-elevation-z1">
           
           <!-- Колонка статуса (Active) -->

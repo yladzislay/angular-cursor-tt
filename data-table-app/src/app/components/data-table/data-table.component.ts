@@ -19,6 +19,7 @@ import { MatCardModule } from '@angular/material/card';
 import { Subscription } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 import { DataService } from '../../services/data.service';
 import { UserData } from '../../models/user-data.interface';
@@ -151,7 +152,22 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   Math = Math; // Делаем Math доступным в шаблоне
 
-  constructor(private dataService: DataService) {}
+  /** Флаг, указывающий, является ли текущий экран мобильным */
+  isMobile = false;
+  
+  /** Колонки, скрываемые на мобильных устройствах */
+  mobileHiddenColumns = ['address', 'favoriteFruit', 'tags'];
+  
+  /** Оригинальные настройки колонок (до применения адаптивности) */
+  private originalColumnSettings: {id: string, visible: boolean}[] = [];
+
+  constructor(
+    private dataService: DataService,
+    private breakpointObserver: BreakpointObserver
+  ) {
+    // Сохраняем оригинальные настройки колонок
+    this.originalColumnSettings = this.allColumns.map(col => ({...col}));
+  }
 
   /**
    * Инициализация компонента
@@ -160,6 +176,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadData();
     this.configureCustomSorting();
     this.configureCustomFiltering();
+    this.setupResponsiveness();
   }
 
   /**
@@ -275,6 +292,12 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
     
     // Предотвращаем закрытие меню при клике на чекбокс
     event.stopPropagation();
+
+    // Обновляем оригинальные настройки при явном изменении пользователем
+    const originalColIndex = this.originalColumnSettings.findIndex(c => c.id === columnId);
+    if (originalColIndex >= 0) {
+      this.originalColumnSettings[originalColIndex].visible = event.checked;
+    }
   }
 
   /**
@@ -284,6 +307,14 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
     // Установим видимыми все колонки по умолчанию
     this.allColumns.forEach(column => column.visible = true);
     this.updateDisplayedColumns();
+
+    // Обновляем оригинальные настройки
+    this.originalColumnSettings.forEach(col => {
+      col.visible = true;
+    });
+    
+    // Применяем адаптивность после сброса
+    this.updateResponsiveColumnVisibility();
   }
 
   /**
@@ -444,5 +475,45 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
       data.address.toLowerCase().includes(value) ||
       data.favoriteFruit.toLowerCase().includes(value) ||
       data.tags.some(tag => tag.toLowerCase().includes(value));
+  }
+
+  /**
+   * Настройка адаптивности в зависимости от размера экрана
+   */
+  setupResponsiveness(): void {
+    // Подписываемся на изменения размера экрана
+    const layoutChanges = this.breakpointObserver.observe([
+      Breakpoints.HandsetPortrait,
+      Breakpoints.TabletPortrait
+    ]).subscribe(result => {
+      this.isMobile = result.matches;
+      
+      // Обновляем видимость колонок в зависимости от размера экрана
+      this.updateResponsiveColumnVisibility();
+    });
+    
+    this.subscriptions.add(layoutChanges);
+  }
+  
+  /**
+   * Обновляет видимость колонок в зависимости от размера экрана
+   */
+  updateResponsiveColumnVisibility(): void {
+    // Восстанавливаем оригинальные настройки колонок
+    this.allColumns.forEach((col, index) => {
+      col.visible = this.originalColumnSettings[index].visible;
+    });
+    
+    // На мобильных устройствах скрываем определенные колонки
+    if (this.isMobile) {
+      this.allColumns.forEach(col => {
+        if (this.mobileHiddenColumns.includes(col.id)) {
+          col.visible = false;
+        }
+      });
+    }
+    
+    // Обновляем отображаемые колонки
+    this.updateDisplayedColumns();
   }
 } 
