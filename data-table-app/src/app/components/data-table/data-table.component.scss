@@ -23,6 +23,37 @@
   width: 100%;
 }
 
+// Стили для заголовков колонок и иконок сортировки
+.header-cell {
+  display: flex;
+  align-items: center;
+  
+  .sort-icon {
+    opacity: 0.5;
+    font-size: 16px;
+    margin-left: 4px;
+  }
+  
+  &:hover {
+    .sort-icon {
+      opacity: 1;
+    }
+  }
+}
+
+// Стиль для метки статуса
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  background-color: #f1f1f1;
+  
+  &.active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+}
+
 .tag {
   display: inline-block;
   background-color: #f1f1f1;
@@ -37,5 +68,10 @@
 @media (max-width: 768px) {
   .container {
     padding: 10px;
+  }
+  
+  // На маленьких экранах уменьшаем отступы в ячейках
+  td.mat-cell, th.mat-header-cell {
+    padding: 8px;
   }
 } 

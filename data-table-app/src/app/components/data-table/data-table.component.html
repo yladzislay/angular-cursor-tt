@@ -5,6 +5,7 @@
   <mat-form-field appearance="outline" class="filter-field">
     <mat-label>Фильтр</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Например: Apple">
+    <mat-hint>Поиск по всем полям: имя, компания, email, адрес, теги</mat-hint>
   </mat-form-field>
   
   <!-- Индикатор загрузки -->
@@ -18,55 +19,104 @@
       
       <!-- Колонка статуса (Active) -->
       <ng-container matColumnDef="isActive">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Статус </th>
-        <td mat-cell *matCellDef="let row"> {{row.isActive ? 'Активен' : 'Неактивен'}} </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> 
+          <div class="header-cell">
+            Статус
+            <mat-icon class="sort-icon">unfold_more</mat-icon>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let row"> 
+          <span class="status-badge" [class.active]="row.isActive">
+            {{row.isActive ? 'Активен' : 'Неактивен'}}
+          </span>
+        </td>
       </ng-container>
       
       <!-- Колонка имени (объединяет first и last name) -->
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Имя </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+          <div class="header-cell">
+            Имя
+            <mat-icon class="sort-icon">unfold_more</mat-icon>
+          </div>
+        </th>
         <td mat-cell *matCellDef="let row"> {{row.name.first}} {{row.name.last}} </td>
       </ng-container>
       
       <!-- Колонка возраста -->
       <ng-container matColumnDef="age">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Возраст </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+          <div class="header-cell">
+            Возраст
+            <mat-icon class="sort-icon">unfold_more</mat-icon>
+          </div>
+        </th>
         <td mat-cell *matCellDef="let row"> {{row.age}} </td>
       </ng-container>
       
       <!-- Колонка компании -->
       <ng-container matColumnDef="company">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Компания </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+          <div class="header-cell">
+            Компания
+            <mat-icon class="sort-icon">unfold_more</mat-icon>
+          </div>
+        </th>
         <td mat-cell *matCellDef="let row"> {{row.company}} </td>
       </ng-container>
       
       <!-- Колонка email -->
       <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+          <div class="header-cell">
+            Email
+            <mat-icon class="sort-icon">unfold_more</mat-icon>
+          </div>
+        </th>
         <td mat-cell *matCellDef="let row"> {{row.email}} </td>
       </ng-container>
       
       <!-- Колонка баланса -->
       <ng-container matColumnDef="balance">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Баланс </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+          <div class="header-cell">
+            Баланс
+            <mat-icon class="sort-icon">unfold_more</mat-icon>
+          </div>
+        </th>
         <td mat-cell *matCellDef="let row"> {{row.balance}} </td>
       </ng-container>
       
       <!-- Колонка адреса -->
       <ng-container matColumnDef="address">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Адрес </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+          <div class="header-cell">
+            Адрес
+            <mat-icon class="sort-icon">unfold_more</mat-icon>
+          </div>
+        </th>
         <td mat-cell *matCellDef="let row"> {{row.address}} </td>
       </ng-container>
       
       <!-- Колонка любимого фрукта -->
       <ng-container matColumnDef="favoriteFruit">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Любимый фрукт </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+          <div class="header-cell">
+            Любимый фрукт
+            <mat-icon class="sort-icon">unfold_more</mat-icon>
+          </div>
+        </th>
         <td mat-cell *matCellDef="let row"> {{row.favoriteFruit}} </td>
       </ng-container>
       
       <!-- Колонка тегов (массив) -->
       <ng-container matColumnDef="tags">
-        <th mat-header-cell *matHeaderCellDef> Теги </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+          <div class="header-cell">
+            Теги
+            <mat-icon class="sort-icon">unfold_more</mat-icon>
+          </div>
+        </th>
         <td mat-cell *matCellDef="let row"> 
           <span class="tag" *ngFor="let tag of row.tags">{{tag}}</span>
         </td>
