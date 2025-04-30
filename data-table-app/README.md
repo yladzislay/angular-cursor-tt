@@ -1,27 +1,60 @@
-# DataTableApp
+# Функциональная таблица данных
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.10.
+Приложение реализует функциональную таблицу данных с возможностями сортировки, фильтрации, пагинации и управления колонками. Таблица имеет адаптивный дизайн и оптимизирована для работы на различных устройствах.
 
-## Development server
+## Функциональность
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- **Сортировка:** Возможность сортировать данные по любой колонке (клик по заголовку колонки). Сортировка работает как по возрастанию, так и по убыванию.
+- **Фильтрация:** Поиск по всем полям или по конкретному выбранному полю с мгновенным отображением результатов.
+- **Пагинация:** Разбивка данных на страницы с возможностью выбора количества записей на странице (5, 10, 25, 50, 100).
+- **Управление колонками:** Пользователь может скрывать/показывать отдельные колонки таблицы через контекстное меню.
+- **Адаптивность:** Автоматическая адаптация интерфейса под размер экрана (десктоп, планшет, мобильный).
+- **Индикация загрузки:** Отображение процесса загрузки данных с имитацией сетевого запроса.
 
-## Code scaffolding
+## Технологии
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- **Angular:** Фреймворк для разработки одностраничных приложений (SPA).
+- **Angular Material:** Библиотека компонентов для Angular, реализующая принципы Material Design.
+- **RxJS:** Библиотека для реактивного программирования, используется для обработки асинхронных операций.
+- **TypeScript:** Язык программирования, расширяющий возможности JavaScript.
 
-## Build
+## Структура проекта
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- **models/** - Интерфейсы и типы данных
+- **services/** - Сервисы для работы с данными
+- **components/** - Компоненты приложения
+  - **data-table/** - Основной компонент таблицы
 
-## Running unit tests
+## Начало работы
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Предварительные требования
 
-## Running end-to-end tests
+- Node.js и npm
+- Angular CLI
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+### Установка и запуск
 
-## Further help
+1. Клонировать репозиторий
+```bash
+git clone [URL репозитория]
+cd data-table-app
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+2. Установить зависимости
+```bash
+npm install
+```
+
+3. Запустить приложение
+```bash
+ng serve
+```
+
+4. Открыть приложение в браузере: `http://localhost:4200`
+
+## Примечания по реализации
+
+- Приложение использует Standalone Components из Angular.
+- Данные загружаются асинхронно с имитацией задержки сети (от 0.5 до 1.5 секунд).
+- Для мобильных устройств автоматически скрываются некоторые колонки, чтобы улучшить пользовательский опыт.
+- Интерфейс автоматически адаптируется к различным размерам экрана.

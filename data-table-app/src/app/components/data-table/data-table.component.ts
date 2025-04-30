@@ -356,22 +356,32 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Настраивает кастомную логику сортировки
+   * Настраивает кастомную логику сортировки для обработки сложных структур данных
+   * 
+   * Этот метод:
+   * 1. Позволяет сортировать по вложенным полям (например, name.first + name.last)
+   * 2. Конвертирует boolean значения в числа для корректной сортировки
+   * 3. Обрабатывает строки с валютой, удаляя специальные символы ($, ,)
+   * 4. Преобразует массивы в строки для возможности сортировки
    */
   configureCustomSorting(): void {
     // Настройка доступа к вложенным полям для сортировки
     this.dataSource.sortingDataAccessor = (item: UserData, property: string) => {
       switch (property) {
         case 'name': 
+          // Для имени объединяем имя и фамилию
           return `${item.name.first} ${item.name.last}`;
         case 'isActive': 
-          return item.isActive ? 1 : 0; // Преобразуем boolean в числа для сортировки
+          // Для логических значений преобразуем в числа (true = 1, false = 0)
+          return item.isActive ? 1 : 0;
         case 'balance': 
-          // Удаляем '$' и запятые, чтобы получить числовое значение для сортировки
+          // Для денежных значений удаляем символ валюты и запятые
           return parseFloat(item.balance.replace('$', '').replace(',', ''));
         case 'tags': 
-          return item.tags.join(' '); // Объединяем теги для сортировки
+          // Для массива тегов объединяем их в одну строку
+          return item.tags.join(' ');
         default: 
+          // Для других полей используем значение напрямую
           return (item as any)[property];
       }
     };
@@ -421,7 +431,14 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Настройка кастомной логики фильтрации
+   * Настраивает кастомную логику фильтрации с возможностью выбора поля
+   * 
+   * Эта функция:
+   * 1. Обрабатывает JSON-структуру фильтра (поле + значение)
+   * 2. Поддерживает фильтрацию по всем полям или по конкретно выбранному
+   * 3. Особым образом обрабатывает boolean поля (активен/неактивен)
+   * 4. Выполняет поиск в массивах (теги)
+   * 5. Безопасно обрабатывает ошибки парсинга JSON
    */
   configureCustomFiltering(): void {
     // Настройка кастомной функции фильтрации с поддержкой выбора поля
@@ -437,9 +454,11 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
         // Фильтрация по выбранному полю
         switch (column) {
           case 'all':
+            // Для опции "Все поля" проверяем совпадение в любом из полей
             return this.matchesAllFields(data, value);
           
           case 'name':
+            // Для имени объединяем имя и фамилию
             return `${data.name.first} ${data.name.last}`.toLowerCase().includes(value);
           
           case 'isActive':
@@ -448,6 +467,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
             return statusText.includes(value);
           
           case 'tags':
+            // Для массива тегов ищем совпадение в любом из элементов
             return data.tags.some(tag => tag.toLowerCase().includes(value));
           
           default:
