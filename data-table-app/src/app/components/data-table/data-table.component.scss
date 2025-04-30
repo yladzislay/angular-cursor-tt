@@ -4,11 +4,20 @@
   margin: 0 auto;
 }
 
+// Панель управления таблицей
+.control-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
 // Контейнер для полей фильтрации
 .filter-container {
   display: flex;
   gap: 16px;
-  margin-bottom: 15px;
+  flex-grow: 1;
   
   .filter-column {
     width: 200px;
@@ -18,6 +27,44 @@
   .filter-value {
     flex-grow: 1;
   }
+}
+
+// Стили для меню колонок
+.column-menu-header,
+.column-menu-content,
+.column-menu-footer {
+  padding: 8px 16px;
+}
+
+.column-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .column-menu-title {
+    font-weight: 500;
+  }
+  
+  .column-menu-actions {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.column-menu-content {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  
+  .column-option {
+    margin-bottom: 8px;
+  }
+}
+
+.column-menu-footer {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .spinner-container {
@@ -75,28 +122,6 @@
   font-size: 0.85rem;
 }
 
-// Адаптивность для маленьких экранов
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
-  
-  // На маленьких экранах меняем направление фильтров на вертикальное
-  .filter-container {
-    flex-direction: column;
-    gap: 0;
-    
-    .filter-column, .filter-value {
-      width: 100%;
-    }
-  }
-  
-  // На маленьких экранах уменьшаем отступы в ячейках
-  td.mat-cell, th.mat-header-cell {
-    padding: 8px;
-  }
-}
-
 // Стили для информации о пагинации
 .pagination-info {
   display: flex;
@@ -107,5 +132,41 @@
   .pagination-actions {
     display: flex;
     gap: 8px;
+  }
+}
+
+// Адаптивность для маленьких экранов
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+  
+  // На маленьких экранах меняем направление элементов управления
+  .control-panel {
+    flex-direction: column;
+    
+    .column-visibility-control {
+      margin-bottom: 8px;
+      
+      button {
+        width: 100%;
+      }
+    }
+  }
+  
+  // На маленьких экранах меняем направление фильтров на вертикальное
+  .filter-container {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    
+    .filter-column, .filter-value {
+      width: 100%;
+    }
+  }
+  
+  // На маленьких экранах уменьшаем отступы в ячейках
+  td.mat-cell, th.mat-header-cell {
+    padding: 8px;
   }
 } 

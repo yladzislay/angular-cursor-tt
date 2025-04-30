@@ -12,6 +12,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { DataService } from '../../services/data.service';
 import { UserData } from '../../models/user-data.interface';
@@ -33,24 +36,32 @@ import { UserData } from '../../models/user-data.interface';
     MatSelectModule,
     MatButtonModule,
     MatTooltipModule,
-    MatChipsModule
+    MatChipsModule,
+    MatMenuModule,
+    MatCheckboxModule,
+    MatDividerModule
   ],
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.scss'
 })
 export class DataTableComponent implements OnInit, AfterViewInit {
-  // Столбцы, которые будут отображаться в таблице
-  displayedColumns: string[] = [
-    'isActive', 
-    'name',
-    'age',
-    'company',
-    'email',
-    'balance',
-    'address',
-    'favoriteFruit',
-    'tags'
+  // Все доступные колонки
+  allColumns: {id: string, name: string, visible: boolean}[] = [
+    { id: 'isActive', name: 'Статус', visible: true },
+    { id: 'name', name: 'Имя', visible: true },
+    { id: 'age', name: 'Возраст', visible: true },
+    { id: 'company', name: 'Компания', visible: true },
+    { id: 'email', name: 'Email', visible: true },
+    { id: 'balance', name: 'Баланс', visible: true },
+    { id: 'address', name: 'Адрес', visible: true },
+    { id: 'favoriteFruit', name: 'Любимый фрукт', visible: true },
+    { id: 'tags', name: 'Теги', visible: true }
   ];
+  
+  // Столбцы, которые будут отображаться в таблице (обновляется из allColumns)
+  displayedColumns: string[] = this.allColumns
+    .filter(column => column.visible)
+    .map(column => column.id);
   
   // Источник данных для MatTable
   dataSource = new MatTableDataSource<UserData>([]);
@@ -124,6 +135,50 @@ export class DataTableComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
       }
     });
+  }
+
+  /**
+   * Обновляет массив отображаемых колонок на основе выбора пользователя
+   */
+  updateDisplayedColumns(): void {
+    this.displayedColumns = this.allColumns
+      .filter(column => column.visible)
+      .map(column => column.id);
+  }
+
+  /**
+   * Показать/скрыть все колонки
+   * @param show Показать все колонки (true) или скрыть все (false)
+   */
+  toggleAllColumns(show: boolean): void {
+    this.allColumns.forEach(column => column.visible = show);
+    this.updateDisplayedColumns();
+  }
+
+  /**
+   * Обработчик изменения видимости колонки
+   * @param columnId Идентификатор колонки
+   * @param event Событие изменения
+   */
+  toggleColumn(columnId: string, event: any): void {
+    // Найти колонку в массиве и обновить её видимость
+    const column = this.allColumns.find(col => col.id === columnId);
+    if (column) {
+      column.visible = event.checked;
+      this.updateDisplayedColumns();
+    }
+    
+    // Предотвращаем закрытие меню при клике на чекбокс
+    event.stopPropagation();
+  }
+
+  /**
+   * Восстанавливает стандартный набор колонок
+   */
+  resetColumnsToDefault(): void {
+    // Установим видимыми все колонки по умолчанию
+    this.allColumns.forEach(column => column.visible = true);
+    this.updateDisplayedColumns();
   }
 
   /**

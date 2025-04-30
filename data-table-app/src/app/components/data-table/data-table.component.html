@@ -1,27 +1,75 @@
 <div class="container">
   <h1>Функциональная таблица данных</h1>
   
-  <!-- Расширенная фильтрация -->
-  <div class="filter-container">
-    <mat-form-field appearance="outline" class="filter-column">
-      <mat-label>Поле для поиска</mat-label>
-      <mat-select [(ngModel)]="filterColumn" (selectionChange)="onFilterColumnChange()">
-        <mat-option *ngFor="let column of filterColumns" [value]="column.value">
-          {{column.viewValue}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+  <!-- Панель управления таблицей -->
+  <div class="control-panel">
+    <!-- Расширенная фильтрация -->
+    <div class="filter-container">
+      <mat-form-field appearance="outline" class="filter-column">
+        <mat-label>Поле для поиска</mat-label>
+        <mat-select [(ngModel)]="filterColumn" (selectionChange)="onFilterColumnChange()">
+          <mat-option *ngFor="let column of filterColumns" [value]="column.value">
+            {{column.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="filter-value">
+        <mat-label>Поиск</mat-label>
+        <input matInput [(ngModel)]="filterValue" (keyup)="applyFilter($event)" placeholder="Например: Apple">
+        <button *ngIf="filterValue" matSuffix mat-icon-button aria-label="Очистить" 
+                (click)="clearFilter()" matTooltip="Очистить фильтр">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-hint *ngIf="filterColumn === 'all'">Поиск по всем полям</mat-hint>
+        <mat-hint *ngIf="filterColumn === 'isActive'">Введите 'активен' или 'неактивен'</mat-hint>
+      </mat-form-field>
+    </div>
     
-    <mat-form-field appearance="outline" class="filter-value">
-      <mat-label>Поиск</mat-label>
-      <input matInput [(ngModel)]="filterValue" (keyup)="applyFilter($event)" placeholder="Например: Apple">
-      <button *ngIf="filterValue" matSuffix mat-icon-button aria-label="Очистить" 
-              (click)="clearFilter()" matTooltip="Очистить фильтр">
-        <mat-icon>close</mat-icon>
+    <!-- Кнопка управления колонками -->
+    <div class="column-visibility-control">
+      <button mat-stroked-button [matMenuTriggerFor]="columnMenu" 
+              matTooltip="Управление видимостью колонок">
+        <mat-icon>view_column</mat-icon>
+        Колонки
       </button>
-      <mat-hint *ngIf="filterColumn === 'all'">Поиск по всем полям</mat-hint>
-      <mat-hint *ngIf="filterColumn === 'isActive'">Введите 'активен' или 'неактивен'</mat-hint>
-    </mat-form-field>
+      
+      <!-- Меню для выбора колонок -->
+      <mat-menu #columnMenu="matMenu" class="column-menu">
+        <div class="column-menu-header" (click)="$event.stopPropagation()">
+          <span class="column-menu-title">Управление колонками</span>
+          <div class="column-menu-actions">
+            <button mat-button (click)="toggleAllColumns(true); $event.stopPropagation()">
+              Выбрать все
+            </button>
+            <button mat-button (click)="toggleAllColumns(false); $event.stopPropagation()">
+              Снять все
+            </button>
+          </div>
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <div class="column-menu-content" (click)="$event.stopPropagation()">
+          <div *ngFor="let column of allColumns" class="column-option">
+            <mat-checkbox 
+              [checked]="column.visible" 
+              (change)="toggleColumn(column.id, $event)"
+              [disabled]="displayedColumns.length === 1 && column.visible">
+              {{column.name}}
+            </mat-checkbox>
+          </div>
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <div class="column-menu-footer" (click)="$event.stopPropagation()">
+          <button mat-button color="primary" (click)="resetColumnsToDefault(); $event.stopPropagation()">
+            Сбросить к стандартным
+          </button>
+        </div>
+      </mat-menu>
+    </div>
   </div>
   
   <!-- Индикатор загрузки -->
@@ -144,7 +192,7 @@
       
       <!-- Строка "Нет данных" -->
       <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell" colspan="9">Нет данных, соответствующих фильтру</td>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">Нет данных, соответствующих фильтру</td>
       </tr>
     </table>
     
